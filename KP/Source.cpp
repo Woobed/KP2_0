@@ -6,6 +6,10 @@
 #include <string.h>
 #include <windows.h>
 
+typedef struct node {
+	int num;
+	struct node* next;
+} node;
 
 typedef struct mbr {
 	char name[8];
@@ -26,17 +30,16 @@ int put_for(int size, int fr, int to, mbr* arr, int i); /*Возвращает �
 int count_DNQ(int size, int i, int j, mbr* arr);		/*просчитывант изменения очков при дисквалификациях*/
 int best_in_ride(int size, int i, mbr* arr);			/*Возвращает индекс лучшей яхты в заезде*/
 int read_from_file(int size, mbr* arr, char* fname);	/*Считывает данные из файла*/
-mbr* add_new_mas(int size, mbr* arr, int * newarr);		/*Создает новый массив*/
+mbr* add_new_mas(int size, mbr* arr,node* head);		/*Создает новый массив*/
 
-int add_for_dnq(int size, mbr* arr, int* newarrindex, int newcount);							/*Добавляет в массив индексы яхт имеющих дисквалификацию*/
-int add_for_wp(int size, mbr* arr, int* newarrindex, int newcount);								/*Добавляет в массив индексы яхт имеющих штрафные очки*/
-int add_for_point_area(int size, mbr* arr, int* newarrindex, int newcount, int min, int max);	/*Добавляет в массив индексы яхт имеющих очки в заданном диапазоне*/
-int add_for_place_area(int size, mbr* arr, int* newarrindex, int newcount, int minp, int maxp); /*Добавляет в массив индексы яхт имеющих место в заданном диапазоне*/
-int del_str(int size, mbr* arr, int snum);														/*Удаляет строку таблицы*/
-int put_in_file(int size, mbr* arr, char* fnamesec);											/*Записывает таблицу в файл*/
-
-
-
+int add_for_dnq(int size, mbr* arr,int newcount, node* point);								/*Добавляет в массив индексы яхт имеющих дисквалификацию*/
+int add_for_wp(int size, mbr* arr, int newcount,node* point);								/*Добавляет в массив индексы яхт имеющих штрафные очки*/
+int add_for_point_area(int size, mbr* arr, int newcount, int min, int max, node* point);	/*Добавляет в массив индексы яхт имеющих очки в заданном диапазоне*/
+int add_for_place_area(int size, mbr* arr,  int newcount, int minp, int maxp, node* point); /*Добавляет в массив индексы яхт имеющих место в заданном диапазоне*/
+int del_str(int size, mbr* arr, int snum);													/*Удаляет строку таблицы*/
+int put_in_file(int size, mbr* arr, char* fnamesec);										/*Записывает таблицу в файл*/
+node* add_end(node* prev,int num);															/*Заполняет текущий и добавляет следующий элемент списка*/
+node* create_head(int num);																	/*Создает пустой список*/
 
 
 int main() {
@@ -199,13 +202,13 @@ int main() {
 			break;
 		}
 		case 8: {		/*Создание подмассива*/
+			node* head=create_head(0);
+			node* point = head;
 			int localflag = 0;
-			int* newarrindex;
 			int newcount = 0;
 			for (int i = 0; i < size; i++) {
 				membr[i].taken = 0;
 			}
-			newarrindex = (int*)malloc(size * sizeof(int));
 			system("cls");
 			while (localflag == 0) {
 				int h;
@@ -214,37 +217,50 @@ int main() {
 				switch (h) {
 				case 1: {	/*Добавление яхт по наличию дисквалификации*/
 					system("cls");
-					newcount=add_for_dnq(size,membr,newarrindex,newcount);
-					for (int i = 0; i < size; i++) {
-						printf("%d ", newarrindex[i]);
+					int i = newcount;
+					newcount=add_for_dnq(size,membr,newcount,point);
+					for (i; i < newcount; i++) {		/*Обеспечивает продолжение заполнения списка с последнего элемента*/
+						point = point->next;
 					}
 					printf("Добавлено по дисквалификации\n\n");
 					break;
 				}
 				case 2: {	/*Добавление яхт по наличию штрафных очков*/
 					system("cls");
-					newcount = add_for_wp(size, membr, newarrindex, newcount);
+					int i = newcount;
+					newcount = add_for_wp(size, membr, newcount,point);
+					for (i; i < newcount; i++) {
+						point = point->next;
+					}
 					printf("Добавлено по штрафным очкам\n\n");
 					break;
 				}
 				case 3: {	/*Добавление яхт по диапазону очков*/
 					int min, max;
+					int i = newcount;
 					printf("Введите минимум очков ");
 					scanf("%d", &min);
 					printf("Введите максимум очков ");
 					scanf("%d", &max);
-					newcount = add_for_point_area(size, membr, newarrindex, newcount, min, max);
+					newcount = add_for_point_area(size, membr, newcount, min, max,point);
+					for (i; i < newcount; i++) {		
+						point = point->next;
+					}
 					system("cls");
 					printf("Добавлено от %d до %d очков\n\n",min,max);
 					break;
 				}
 				case 4: {	/*Добавление яхт по диапазону мест*/
 					int minp, maxp;
+					int i = newcount;
 					printf("Введите минимальное место ");
 					scanf("%d", &minp);
 					printf("Введите максимальное место ");
 					scanf("%d", &maxp);
-					newcount = add_for_place_area(size, membr, newarrindex, newcount, minp, maxp);
+					newcount = add_for_place_area(size, membr, newcount, minp, maxp, point);
+					for (i; i < newcount; i++) {
+						point = point->next;
+					}
 					system("cls");
 					printf("Добавлено от %d до %d мест\n\n", minp, maxp);
 					break;
@@ -253,7 +269,7 @@ int main() {
 					mbr* newmas;
 					newmas = (mbr*)malloc(newcount * sizeof(membr));
 					system("cls");
-					newmas=add_new_mas(newcount , membr, newarrindex);
+					newmas=add_new_mas(newcount , membr,head);
 					puts("Созданный подамссив:\n");
 					for (int i = 0; i < newcount; i++) {
 						printf("%s %d %d %d %d %d %d %d %d\n", newmas[i].name, newmas[i].ride[0], newmas[i].ride[1], newmas[i].ride[2], newmas[i].ride[3], newmas[i].ride[4], newmas[i].ride[5], newmas[i].ride[6], newmas[i].result, newmas[i].place);
@@ -397,22 +413,38 @@ int read_from_file(int size,mbr* arr,char * fname) {
 	return 1;
 }
 
-mbr* add_new_mas(int size, mbr* arr, int* newarr) {
+mbr* add_new_mas(int size, mbr* arr,node* head) {
 	mbr* newmas;
+	int i = 0;
 	newmas = (mbr*)malloc(size * sizeof(mbr));
-	for (int i = 0; i < size; i++) {
-		newmas[i] = arr[newarr[i]];
+	while (head->next != NULL) {
+		newmas[i] = arr[head->num];
+		head = head->next;
+		i++;
 	}
 	return newmas;
 }
 
-int add_for_dnq(int size,mbr* arr,int* newarrindex,int newcount) {
+int add_for_dnq(int size, mbr* arr,int newcount, node* point) {
 	for (int i = 0; i < size; i++) {
 		for (int j = 0; j < 7; j++) {
 			if (arr[i].DNQ[j] == 1 && arr[i].taken == 0) {
-				newarrindex[newcount] = i;
-				newcount++;
+				point = add_end(point, i);
 				arr[i].taken = 1;
+				newcount++;
+				break;
+			}
+		}
+	}
+	return newcount;
+}
+int add_for_wp(int size, mbr* arr, int newcount,node* point) {
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < 7; j++) {
+			if (arr[i].flag[j] == 1 && arr[i].taken == 0) {
+				point = add_end(point, i);
+				arr[i].taken = 1;
+				newcount++;
 				break;
 			}
 		}
@@ -420,33 +452,20 @@ int add_for_dnq(int size,mbr* arr,int* newarrindex,int newcount) {
 	
 	return newcount;
 }
-int add_for_wp(int size, mbr* arr, int* newarrindex, int newcount) {
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < 7; j++) {
-			if (arr[i].flag[j] == 1 && arr[i].taken == 0) {
-				newarrindex[newcount] = i;
-				newcount++;
-				arr[i].taken = 1;
-				break;
-			}
-		}
-	}
-	return newcount;
-}
-int add_for_point_area(int size, mbr* arr, int* newarrindex, int newcount,int min,int max) {
+int add_for_point_area(int size, mbr* arr,  int newcount,int min,int max, node* point) {
 	for (int i = 0; i < size; i++) {
 		if (arr[i].result >= min && arr[i].result <= max && arr[i].taken == 0) {
-			newarrindex[newcount] = i;
+			point = add_end(point, i);
 			newcount++;
 			arr[i].taken = 1;
 		}
 	}
 	return newcount;
 }
-int add_for_place_area(int size, mbr* arr, int* newarrindex, int newcount,int minp,int maxp) {
+int add_for_place_area(int size, mbr* arr, int newcount,int minp,int maxp, node* point) {
 	for (int i = 0; i < size; i++) {
 		if (arr[i].place >= minp && arr[i].place <= maxp && arr[i].taken == 0) {
-			newarrindex[newcount] = i;
+			point = add_end(point, i);
 			newcount++;
 			arr[i].taken = 1;
 		}
@@ -485,4 +504,18 @@ int put_in_file(int size,mbr* arr,char* fnamesec) {
 		fclose(sec);
 		return 1;
 	}
+}
+node* create_head(int num) {
+	node* lst;
+	lst = (node*)malloc(sizeof(node));
+	lst->num = num;
+	lst->next = NULL;
+	return(lst);
+}
+node* add_end(node* prev,int num) {
+	node* temp = (node*)malloc(sizeof(node));
+	prev->num = num;
+	temp->next = NULL;
+	prev->next = temp;
+	return temp;
 }
