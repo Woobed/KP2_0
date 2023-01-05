@@ -6,26 +6,34 @@
 #include <string.h>
 #include <windows.h>
 
+
 typedef struct mbr {
 	char name[8];
 	int ride[7];
 	int result = 0;
 	int place;
-	int flag[7];   /*для штрафных очков*/
-	int DNQ[7];		/*дисквалификация*/
-	int ptr[7];		/*для контроля уменьшения баллов при дисквалификации*/
+	int flag[7];    /*РґР»СЏ РєРѕРЅС‚СЂРѕР»СЏ С€С‚СЂР°С„РЅС‹С… РѕС‡РєРѕРІ*/
+	int DNQ[7];		/*РєРѕРЅС‚СЂРѕР»СЏ РґРёСЃРєРІР°Р»РёС„РёРєР°С†РёР№*/
+	int ptr[7];		/*РґР»СЏ РєРѕРЅС‚СЂРѕР»СЏ СѓРјРµРЅСЊС€РµРЅРёСЏ Р±Р°Р»Р»РѕРІ РїСЂРё РґРёСЃРєРІР°Р»РёС„РёРєР°С†РёРё*/
 	int taken;
 } mbr;
 
-void put_table(int size,mbr* arr); /*Выводит таблицу в консоль*/
-void sort_bubble(int size, mbr* arr);/*Сортирует массив структур*/
-int count_result(int size, int j, mbr* arr); /*Высчитывает сумму очков 1 яхты*/
-int count_place(int size, mbr* arr); /*Возвращает индекс яхты для нужного места*/
-int put_for(int size, int fr, int to, mbr* arr, int i); /*Возвращает индексы яхт с очками в заданном диапазоне*/
-int count_DNQ(int size, int i, int j, mbr* arr); /*просчитывант изменения очков при дисквалификациях*/
-int best_in_ride(int size, int i, mbr* arr); /*Возвращает индекс лучшей яхты в заезде*/
-int read_from_file(int size, mbr* arr, char* fname); /*Считывает данные из файла*/
-mbr* add_new_mas(int size, mbr* arr, int * newarr); /*Создает новый массив*/
+void put_table(int size,mbr* arr);						/*Р’С‹РІРѕРґРёС‚ С‚Р°Р±Р»РёС†Сѓ РІ РєРѕРЅСЃРѕР»СЊ*/
+void sort_bubble(int size, mbr* arr);					/*РЎРѕСЂС‚РёСЂСѓРµС‚ РјР°СЃСЃРёРІ СЃС‚СЂСѓРєС‚СѓСЂ*/
+int count_result(int size, int j, mbr* arr);			/*Р’С‹СЃС‡РёС‚С‹РІР°РµС‚ СЃСѓРјРјСѓ РѕС‡РєРѕРІ СѓРєР°Р·Р°РЅРЅРѕР№ СЏС…С‚С‹*/
+int count_place(int size, mbr* arr);					/*Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ СЏС…С‚С‹ РґР»СЏ СѓРєР°Р·Р°РЅРЅРѕРіРѕ РјРµСЃС‚Р°*/
+int put_for(int size, int fr, int to, mbr* arr, int i); /*Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃС‹ СЏС…С‚ СЃ РѕС‡РєР°РјРё РІ Р·Р°РґР°РЅРЅРѕРј РґРёР°РїР°Р·РѕРЅРµ*/
+int count_DNQ(int size, int i, int j, mbr* arr);		/*РїСЂРѕСЃС‡РёС‚С‹РІР°РЅС‚ РёР·РјРµРЅРµРЅРёСЏ РѕС‡РєРѕРІ РїСЂРё РґРёСЃРєРІР°Р»РёС„РёРєР°С†РёСЏС…*/
+int best_in_ride(int size, int i, mbr* arr);			/*Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ Р»СѓС‡С€РµР№ СЏС…С‚С‹ РІ Р·Р°РµР·РґРµ*/
+int read_from_file(int size, mbr* arr, char* fname);	/*РЎС‡РёС‚С‹РІР°РµС‚ РґР°РЅРЅС‹Рµ РёР· С„Р°Р№Р»Р°*/
+mbr* add_new_mas(int size, mbr* arr, int * newarr);		/*РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ РјР°СЃСЃРёРІ*/
+
+int add_for_dnq(int size, mbr* arr, int* newarrindex, int newcount);							/*Р”РѕР±Р°РІР»СЏРµС‚ РІ РјР°СЃСЃРёРІ РёРЅРґРµРєСЃС‹ СЏС…С‚ РёРјРµСЋС‰РёС… РґРёСЃРєРІР°Р»РёС„РёРєР°С†РёСЋ*/
+int add_for_wp(int size, mbr* arr, int* newarrindex, int newcount);								/*Р”РѕР±Р°РІР»СЏРµС‚ РІ РјР°СЃСЃРёРІ РёРЅРґРµРєСЃС‹ СЏС…С‚ РёРјРµСЋС‰РёС… С€С‚СЂР°С„РЅС‹Рµ РѕС‡РєРё*/
+int add_for_point_area(int size, mbr* arr, int* newarrindex, int newcount, int min, int max);	/*Р”РѕР±Р°РІР»СЏРµС‚ РІ РјР°СЃСЃРёРІ РёРЅРґРµРєСЃС‹ СЏС…С‚ РёРјРµСЋС‰РёС… РѕС‡РєРё РІ Р·Р°РґР°РЅРЅРѕРј РґРёР°РїР°Р·РѕРЅРµ*/
+int add_for_place_area(int size, mbr* arr, int* newarrindex, int newcount, int minp, int maxp); /*Р”РѕР±Р°РІР»СЏРµС‚ РІ РјР°СЃСЃРёРІ РёРЅРґРµРєСЃС‹ СЏС…С‚ РёРјРµСЋС‰РёС… РјРµСЃС‚Рѕ РІ Р·Р°РґР°РЅРЅРѕРј РґРёР°РїР°Р·РѕРЅРµ*/
+int del_str(int size, mbr* arr, int snum);														/*РЈРґР°Р»СЏРµС‚ СЃС‚СЂРѕРєСѓ С‚Р°Р±Р»РёС†С‹*/
+int put_in_file(int size, mbr* arr, char* fnamesec);											/*Р—Р°РїРёСЃС‹РІР°РµС‚ С‚Р°Р±Р»РёС†Сѓ РІ С„Р°Р№Р»*/
 
 
 
@@ -43,14 +51,14 @@ int main() {
 	mbr *membr;
 	int j = 0;
 	char s[200];
-	puts("Введите имя файла");
+	puts("Р’РІРµРґРёС‚Рµ РёРјСЏ С„Р°Р№Р»Р°");
 	scanf("%s", &fname);
 	strcat(fname, txt);
 	fnam = fname;
 	FILE* inf;
 	inf = fopen(fname, "r");
 	if (inf == NULL) {
-		printf("Файла не существует");
+		printf("Р¤Р°Р№Р»Р° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚");
 		return 0;
 	}
 	while (!feof(inf)) {
@@ -61,13 +69,13 @@ int main() {
 
 	membr = (mbr*)malloc(size * sizeof(mbr));
 	if (read_from_file(size, membr, fnam) == NULL) {
-		printf("Ошибка в данных занесенных в файл");
+		printf("РћС€РёР±РєР° РІ РґР°РЅРЅС‹С… Р·Р°РЅРµСЃРµРЅРЅС‹С… РІ С„Р°Р№Р»");
 		return 0;
 	}
 	for (int j = 0; j < size; j++) {
 		printf("%s %d %d %d %d %d %d %d\n\n", membr[j].name, membr[j].ride[0], membr[j].ride[1], membr[j].ride[2], membr[j].ride[3], membr[j].ride[4], membr[j].ride[5], membr[j].ride[6]);
 
-		for (int k = 0; k < 7; k++) { /*Просчет flag для данных*/
+		for (int k = 0; k < 7; k++) {			/*РџСЂРѕСЃС‡РµС‚ flag РґР»СЏ РґР°РЅРЅС‹С… СЃС‡РёС‚Р°РЅРЅС‹С… РёР· С„Р°Р№Р»Р°*/
 			if (membr[j].ride[k] % 10 == 0) {
 				membr[j].ride[k] = (membr[j].ride[k] / 10)+1;
 				membr[j].flag[k] = 1;
@@ -78,42 +86,42 @@ int main() {
 			
 		}
 	}
-	for (int j = 0; j < size; j++) { /*просчет DNQ для данных*/
+	for (int j = 0; j < size; j++) {			/*РїСЂРѕСЃС‡РµС‚ DNQ РґР»СЏ РґР°РЅРЅС‹С… СЃС‡РёС‚Р°РЅРЅС‹С… РёР· С„Р°Р№Р»Р°*/
 		for (int k = 0; k < 7; k++) {
 			if (membr[j].ride[k] < 0) membr[j].DNQ[k] = 1;
 			else membr[j].DNQ[k] = 0;
 		}
 	}
-	for (int j = 0; j < size; j++) { /*Перерасчет очков при дисквалификации и просчет места*/
+	for (int j = 0; j < size; j++) {			/*РџРµСЂРµСЂР°СЃС‡РµС‚ РѕС‡РєРѕРІ РїСЂРё РґРёСЃРєРІР°Р»РёС„РёРєР°С†РёРё*/
 			for (int k = 0; k < 7; k++) {
 				if (membr[j].DNQ[k] == 1) membr[j].ride[k] = count_DNQ(size, j, k, membr);
 			}
 		membr[j].result=count_result(size,j,membr);
 		membr[j].place = 0;
 	}
-		for (int j = 1; j <= size; j++) {
+		for (int j = 1; j <= size; j++) {		/*РџРµСЂРµСЂР°СЃС‡РµС‚ РјРµСЃС‚Р°*/
 			membr[count_place(size,membr)].place = j;
 	}
-	while (flag == 0) { /*Главное меню*/
-		printf("Вывести таблицу -> 1\nОтсортировать -> 2\nВывести команды с диапазоном очков -> 3\nЗаписать таблицу в файл -> 4\nЛучший в заезде -> 5\nИзменить данные таблицы -> 6\nУдалить строку -> 7\nСоздать подмассив -> 8\nЗавершить -> 0\n");
+	while (flag == 0) {		/*Р“Р»Р°РІРЅРѕРµ РјРµРЅСЋ*/
+		printf("Р’С‹РІРµСЃС‚Рё С‚Р°Р±Р»РёС†Сѓ -> 1\nРћС‚СЃРѕСЂС‚РёСЂРѕРІР°С‚СЊ -> 2\nР’С‹РІРµСЃС‚Рё РєРѕРјР°РЅРґС‹ СЃ РґРёР°РїР°Р·РѕРЅРѕРј РѕС‡РєРѕРІ -> 3\nР—Р°РїРёСЃР°С‚СЊ С‚Р°Р±Р»РёС†Сѓ РІ С„Р°Р№Р» -> 4\nР›СѓС‡С€РёР№ РІ Р·Р°РµР·РґРµ -> 5\nРР·РјРµРЅРёС‚СЊ РґР°РЅРЅС‹Рµ С‚Р°Р±Р»РёС†С‹ -> 6\nРЈРґР°Р»РёС‚СЊ СЃС‚СЂРѕРєСѓ -> 7\nРЎРѕР·РґР°С‚СЊ РїРѕРґРјР°СЃСЃРёРІ -> 8\nР—Р°РІРµСЂС€РёС‚СЊ -> 0\n");
 		scanf("%d", &ptr);
 		switch (ptr) {
-		case 1: {
+		case 1: {			/*Р’С‹РІРѕРґ С‚Р°Р±Р»РёС†С‹*/
 			system("cls");
 			put_table(size,membr);
 			break;
 		}
-		case 2: {
+		case 2: {			/*РЎРѕСЂС‚РёСЂРѕРІРєР°*/
 			sort_bubble(size,membr);
 			system("cls"); 
-			printf("Табица отсторирована\n\n");
+			printf("РўР°Р±РёС†Р° РѕС‚СЃС‚РѕСЂРёСЂРѕРІР°РЅР°\n\n");
 			put_table(size, membr);
 			break;
 		}
-		case 3: {
-			printf("Введите меньшее значение диапазона\n");
+		case 3: {			/*Р’С‹РІРѕРґ РїРѕ РґРёР°РїР°Р·РѕРЅСѓ РѕС‡РєРѕРІ*/
+			printf("Р’РІРµРґРёС‚Рµ РјРµРЅСЊС€РµРµ Р·РЅР°С‡РµРЅРёРµ РґРёР°РїР°Р·РѕРЅР°\n");
 			scanf("%d", &fr);
-			printf("Введите большее значение диапазона\n");
+			printf("Р’РІРµРґРёС‚Рµ Р±РѕР»СЊС€РµРµ Р·РЅР°С‡РµРЅРёРµ РґРёР°РїР°Р·РѕРЅР°\n");
 			scanf("%d", &to);
 			for (int i = 0; i < size; i++) {
 				if (put_for(size, fr, to, membr, i) == 1) printf("\n%s %d", membr[i].name, membr[i].result);
@@ -121,58 +129,35 @@ int main() {
 			printf("\n\n");
 			break;
 		}
-		case 4: { /*запись данных в указанный файл */
-			FILE* sec;
+		case 4: {			/*Р·Р°РїРёСЃСЊ РґР°РЅРЅС‹С… РІ СѓРєР°Р·Р°РЅРЅС‹Р№ С„Р°Р№Р» */
 			char fnamesec[60];
-			puts("Введите имя файла\n");
+			puts("Р’РІРµРґРёС‚Рµ РёРјСЏ С„Р°Р№Р»Р°\n");
 			scanf("%s", &fnamesec);
 			strcat(fnamesec, txt);
-			sec = fopen(fnamesec, "w");
-			if (sec == NULL) {
-				printf("ERROR\n");
-				break;
+			if (put_in_file(size, membr, fnamesec) != 1) {
+				printf("РћС€РёР±РєР° Р·Р°РїРёСЃРё С„Р°Р№Р»Р°");
+				return 0;
 			}
-			for (int i = 0; i < size; i++) {
-				fprintf(sec, "%s ", membr[i].name);
-				for (int j = 0; j < 7; j++) {
-						if (membr[i].flag[j] == 1) {
-							fprintf(sec, "%d0 ", membr[i].ride[j]);
-							continue;
-						}
-						if (membr[i].DNQ[j] == 1) {
-							fprintf(sec, "%d ", -membr[i].ride[j]);
-							continue;
-						}
-						if ((membr[i].flag[j] == 0) && (membr[i].DNQ[j] == 0)) {
-							fprintf(sec, "%d ", membr[i].ride[j]);
-							continue;
-						}
-					}
-				fprintf(sec, "\n");
-				}
-				
-			
 			system("cls");
-			printf("Успешно записано\n\n");
-			if (sec != NULL) fclose(sec);
+			printf("РЈСЃРїРµС€РЅРѕ Р·Р°РїРёСЃР°РЅРѕ\n\n");
 			break;
 		}
-		case 5: {
+		case 5: {			/*Р’С‹РІРѕРґ Р»СѓС‡С€РµРіРѕ СѓС‡Р°СЃС‚РёРЅРёРєР° РїРѕ Р·Р°РµР·РґСѓ*/
 			int h;
 			system("cls");
 			put_table(size,membr);
-			puts("Введите номер заезда\n");
+			puts("Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ Р·Р°РµР·РґР°\n");
 			scanf("%d", &h);
-			printf("Лучшим в %d заезде был %s\n\n", h, membr[best_in_ride(size,h-1, membr)].name);
+			printf("Р›СѓС‡С€РёРј РІ %d Р·Р°РµР·РґРµ Р±С‹Р» %s\n\n", h, membr[best_in_ride(size,h-1, membr)].name);
 			break;
 		}
-		case 6: { /*Изменение данных и перерасчет неизмененных данных*/
+		case 6: {			/*РР·РјРµРЅРµРЅРёРµ РґР°РЅРЅС‹С…*/
 			int m = 0;
 			int n = 0;
 			int n2;
-			printf("Введите номер участника и номер заезда\n");
+			printf("Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ СѓС‡Р°СЃС‚РЅРёРєР° Рё РЅРѕРјРµСЂ Р·Р°РµР·РґР°\n");
 			scanf("%d %d", &m, &n);
-			printf("Введите новое значение\n");
+			printf("Р’РІРµРґРёС‚Рµ РЅРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ\n");
 			scanf("%d", &n2);
 			membr[m - 1].ride[n - 1] = n2;
 
@@ -186,40 +171,35 @@ int main() {
 			for (int j = 1; j <= size; j++) {
 				membr[count_place(size, membr)].place = j;
 			}
-
 			put_table(size, membr);
 			break;
 		}
-		case 7: {
+		case 7: {			/*РЈРґР°Р»РµРЅРёРµ СЃС‚СЂРѕРєРё*/
 			int snum;
-				puts("Введите номер строки для удаленния\n");
-				scanf("%d", &snum);
-				if (snum > size) {
-					printf("Строки с таким номером не существует\n");
-					break;
-				}
-				for (int i = snum - 1; i < size - 1; i++) {
-					membr[i] = membr[i + 1];
-				}
-				size--;
-			for (int j = 0; j < size; j++) { /*Перерасчет очков и мест*/
+			puts("Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ СЃС‚СЂРѕРєРё РґР»СЏ СѓРґР°Р»РµРЅРЅРёСЏ\n");
+			scanf("%d", &snum);
+			if (snum > size) {
+				printf("РЎС‚СЂРѕРєРё СЃ С‚Р°РєРёРј РЅРѕРјРµСЂРѕРј РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚\n");
+				break;
+			}
+			size = del_str(size, membr, snum);
+			for (int j = 0; j < size; j++) {		/*РџРµСЂРµСЂР°СЃС‡РµС‚ РѕС‡РєРѕРІ РїСЂРё РґРёСЃРєРІР°Р»РёС„РёРєР°С†РёРё*/
 				for (int k = 0; k < 7; k++) {
 					if (membr[j].DNQ[k] == 1) membr[j].ride[k] = count_DNQ(size, j, k, membr);
 				}
 				membr[j].result = count_result(size, j, membr);
 				membr[j].place = 0;
 			}
-			for (int j = 1; j <= size; j++) {
+			for (int j = 1; j <= size; j++) {		/*РџРµСЂРµСЂР°СЃС‡РµС‚ РјРµСЃС‚Р°*/
 				membr[count_place(size, membr)].place = j;
 			}
 			system("cls");
-			printf("Строка %d удалена (%s)\n\n", snum, membr[snum - 1].name);
+			printf("РЎС‚СЂРѕРєР° %d СѓРґР°Р»РµРЅР° (%s)\n\n", snum, membr[snum - 1].name);
 			put_table(size, membr);
 			break;
 		}
-		case 8: {
+		case 8: {		/*РЎРѕР·РґР°РЅРёРµ РїРѕРґРјР°СЃСЃРёРІР°*/
 			int localflag = 0;
-			int localsize = 0;
 			int* newarrindex;
 			int newcount = 0;
 			for (int i = 0; i < size; i++) {
@@ -229,79 +209,52 @@ int main() {
 			system("cls");
 			while (localflag == 0) {
 				int h;
-				printf("Выберете критерии подмассива\n\nНаличие дисквалификаций -> 1\nНаличие штрафных очков -> 2\nДиапазон очков -> 3\nДиапазон мест -> 4\nСоздать массив -> 8\nВернуться в главное меню -> 0\n");
+				printf("Р’С‹Р±РµСЂРµС‚Рµ РєСЂРёС‚РµСЂРёРё РїРѕРґРјР°СЃСЃРёРІР°\n\nРќР°Р»РёС‡РёРµ РґРёСЃРєРІР°Р»РёС„РёРєР°С†РёР№ -> 1\nРќР°Р»РёС‡РёРµ С€С‚СЂР°С„РЅС‹С… РѕС‡РєРѕРІ -> 2\nР”РёР°РїР°Р·РѕРЅ РѕС‡РєРѕРІ -> 3\nР”РёР°РїР°Р·РѕРЅ РјРµСЃС‚ -> 4\nРЎРѕР·РґР°С‚СЊ РјР°СЃСЃРёРІ -> 8\nР’РµСЂРЅСѓС‚СЊСЃСЏ РІ РіР»Р°РІРЅРѕРµ РјРµРЅСЋ -> 0\n");
 				scanf("%d", &h);
 				switch (h) {
-				case 1: {
+				case 1: {	/*Р”РѕР±Р°РІР»РµРЅРёРµ СЏС…С‚ РїРѕ РЅР°Р»РёС‡РёСЋ РґРёСЃРєРІР°Р»РёС„РёРєР°С†РёРё*/
 					system("cls");
+					newcount=add_for_dnq(size,membr,newarrindex,newcount);
 					for (int i = 0; i < size; i++) {
-						for (int j = 0; j < 7; j++) {
-							if (membr[i].DNQ[j] == 1 && membr[i].taken==0) {
-								newarrindex[newcount] = i;
-								newcount++;
-								membr[i].taken = 1;
-								break;
-							}
-						}
+						printf("%d ", newarrindex[i]);
 					}
-					printf("Добавлено по дисквалификации\n\n");
+					printf("Р”РѕР±Р°РІР»РµРЅРѕ РїРѕ РґРёСЃРєРІР°Р»РёС„РёРєР°С†РёРё\n\n");
 					break;
 				}
-				case 2: {
+				case 2: {	/*Р”РѕР±Р°РІР»РµРЅРёРµ СЏС…С‚ РїРѕ РЅР°Р»РёС‡РёСЋ С€С‚СЂР°С„РЅС‹С… РѕС‡РєРѕРІ*/
 					system("cls");
-					for (int i = 0; i < size; i++) {
-						for (int j = 0; j < 7; j++) {
-							if (membr[i].flag[j] == 1 && membr[i].taken == 0) {
-								newarrindex[newcount] = i;
-								newcount++;
-								membr[i].taken = 1;
-								break;
-							}
-						}
-					}
-					printf("Добавлено по штрафным очкам\n\n");
+					newcount = add_for_wp(size, membr, newarrindex, newcount);
+					printf("Р”РѕР±Р°РІР»РµРЅРѕ РїРѕ С€С‚СЂР°С„РЅС‹Рј РѕС‡РєР°Рј\n\n");
 					break;
 				}
-				case 3: {
+				case 3: {	/*Р”РѕР±Р°РІР»РµРЅРёРµ СЏС…С‚ РїРѕ РґРёР°РїР°Р·РѕРЅСѓ РѕС‡РєРѕРІ*/
 					int min, max;
-					printf("Введите минимум очков ");
+					printf("Р’РІРµРґРёС‚Рµ РјРёРЅРёРјСѓРј РѕС‡РєРѕРІ ");
 					scanf("%d", &min);
-					printf("Введите максимум очков ");
+					printf("Р’РІРµРґРёС‚Рµ РјР°РєСЃРёРјСѓРј РѕС‡РєРѕРІ ");
 					scanf("%d", &max);
-					for (int i = 0; i < size; i++) {
-						if (membr[i].result >= min && membr[i].result <= max && membr[i].taken == 0) {
-							newarrindex[newcount] = i;
-							newcount++;
-							membr[i].taken = 1;
-						}
-					}
+					newcount = add_for_point_area(size, membr, newarrindex, newcount, min, max);
 					system("cls");
-					printf("Добавлено от %d до %d очков\n\n",min,max);
+					printf("Р”РѕР±Р°РІР»РµРЅРѕ РѕС‚ %d РґРѕ %d РѕС‡РєРѕРІ\n\n",min,max);
 					break;
 				}
-				case 4: {
+				case 4: {	/*Р”РѕР±Р°РІР»РµРЅРёРµ СЏС…С‚ РїРѕ РґРёР°РїР°Р·РѕРЅСѓ РјРµСЃС‚*/
 					int minp, maxp;
-					printf("Введите минимальное место ");
+					printf("Р’РІРµРґРёС‚Рµ РјРёРЅРёРјР°Р»СЊРЅРѕРµ РјРµСЃС‚Рѕ ");
 					scanf("%d", &minp);
-					printf("Введите максимальное место ");
+					printf("Р’РІРµРґРёС‚Рµ РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РјРµСЃС‚Рѕ ");
 					scanf("%d", &maxp);
-					for (int i = 0; i < size; i++) {
-						if (membr[i].place >= minp && membr[i].place <= maxp && membr[i].taken == 0) {
-							newarrindex[newcount] = i;
-							newcount++;
-							membr[i].taken = 1;
-						}
-					}
+					newcount = add_for_place_area(size, membr, newarrindex, newcount, minp, maxp);
 					system("cls");
-					printf("Добавлено от %d до %d мест\n\n", minp, maxp);
+					printf("Р”РѕР±Р°РІР»РµРЅРѕ РѕС‚ %d РґРѕ %d РјРµСЃС‚\n\n", minp, maxp);
 					break;
 				}
-				case 8: {
+				case 8: {	/*РЎРѕР·РґР°РЅРёРµ Рё РІС‹РІРѕРґ РїРѕРґРјР°СЃСЃРёРІР° РїРѕ Р·Р°РґР°РЅРЅС‹Рј СЂР°РЅРµРµ РєСЂРёС‚РµСЂРёСЏРј*/
 					mbr* newmas;
 					newmas = (mbr*)malloc(newcount * sizeof(membr));
 					system("cls");
 					newmas=add_new_mas(newcount , membr, newarrindex);
-					puts("Созданный подамссив:\n");
+					puts("РЎРѕР·РґР°РЅРЅС‹Р№ РїРѕРґР°РјСЃСЃРёРІ:\n");
 					for (int i = 0; i < newcount; i++) {
 						printf("%s %d %d %d %d %d %d %d %d\n", newmas[i].name, newmas[i].ride[0], newmas[i].ride[1], newmas[i].ride[2], newmas[i].ride[3], newmas[i].ride[4], newmas[i].ride[5], newmas[i].ride[6], newmas[i].result, newmas[i].place);
 					}
@@ -313,7 +266,7 @@ int main() {
 					break;
 				}
 				default: {
-					printf("Выберете существующий вариант\n");
+					printf("Р’С‹Р±РµСЂРµС‚Рµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ РІР°СЂРёР°РЅС‚\n");
 				}
 				}
 			}
@@ -326,7 +279,7 @@ int main() {
 		}
 		default: {
 			system("cls");
-			printf("Введен неизвестный символ\n");
+			printf("Р’РІРµРґРµРЅ РЅРµРёР·РІРµСЃС‚РЅС‹Р№ СЃРёРјРІРѕР»\n");
 			break;
 		}
 		}
@@ -336,7 +289,7 @@ int main() {
 }
 
 void put_table(int size,mbr* arr) {
-	printf("Яхта     | 1 | 2 | 3 | 4 | 5 | 6 | 7 | Очки | Место\n");
+	printf("РЇС…С‚Р°     | 1 | 2 | 3 | 4 | 5 | 6 | 7 | РћС‡РєРё | РњРµСЃС‚Рѕ\n");
 	for (int i = 0; i < size; i++) {
 		printf("%6s{%d} ", arr[i].name,i+1);
 		for (int j = 0; j < 7; j++) {
@@ -358,7 +311,7 @@ void put_table(int size,mbr* arr) {
 		printf("%7d\n", arr[i].place);
 	}
 	printf("\n");
-	printf("x -  количество баллов за заезд;\n(x) - штрафные баллы\n!x! - дисквалификация (DNQ)\n\n");
+	printf("x -  РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р»Р»РѕРІ Р·Р° Р·Р°РµР·Рґ;\n(x) - С€С‚СЂР°С„РЅС‹Рµ Р±Р°Р»Р»С‹\n!x! - РґРёСЃРєРІР°Р»РёС„РёРєР°С†РёСЏ (DNQ)\n\n");
 }
 void sort_bubble(int size, mbr* arr) {
 	mbr d;
@@ -451,4 +404,85 @@ mbr* add_new_mas(int size, mbr* arr, int* newarr) {
 		newmas[i] = arr[newarr[i]];
 	}
 	return newmas;
+}
+
+int add_for_dnq(int size,mbr* arr,int* newarrindex,int newcount) {
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < 7; j++) {
+			if (arr[i].DNQ[j] == 1 && arr[i].taken == 0) {
+				newarrindex[newcount] = i;
+				newcount++;
+				arr[i].taken = 1;
+				break;
+			}
+		}
+	}
+	
+	return newcount;
+}
+int add_for_wp(int size, mbr* arr, int* newarrindex, int newcount) {
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < 7; j++) {
+			if (arr[i].flag[j] == 1 && arr[i].taken == 0) {
+				newarrindex[newcount] = i;
+				newcount++;
+				arr[i].taken = 1;
+				break;
+			}
+		}
+	}
+	return newcount;
+}
+int add_for_point_area(int size, mbr* arr, int* newarrindex, int newcount,int min,int max) {
+	for (int i = 0; i < size; i++) {
+		if (arr[i].result >= min && arr[i].result <= max && arr[i].taken == 0) {
+			newarrindex[newcount] = i;
+			newcount++;
+			arr[i].taken = 1;
+		}
+	}
+	return newcount;
+}
+int add_for_place_area(int size, mbr* arr, int* newarrindex, int newcount,int minp,int maxp) {
+	for (int i = 0; i < size; i++) {
+		if (arr[i].place >= minp && arr[i].place <= maxp && arr[i].taken == 0) {
+			newarrindex[newcount] = i;
+			newcount++;
+			arr[i].taken = 1;
+		}
+	}
+	return newcount;
+}
+int del_str(int size, mbr* arr,int snum) {
+	for (int i = snum - 1; i < size - 1; i++) {
+		arr[i] = arr[i + 1];
+	}
+	size--;
+	return size;
+}
+int put_in_file(int size,mbr* arr,char* fnamesec) {
+	FILE* sec;
+	sec = fopen(fnamesec, "w");
+	for (int i = 0; i < size; i++) {
+		fprintf(sec, "%s ", arr[i].name);
+		for (int j = 0; j < 7; j++) {
+			if (arr[i].flag[j] == 1) {
+				fprintf(sec, "%d0 ", arr[i].ride[j]);
+				continue;
+			}
+			if (arr[i].DNQ[j] == 1) {
+				fprintf(sec, "%d ", -arr[i].ride[j]);
+				continue;
+			}
+			if ((arr[i].flag[j] == 0) && (arr[i].DNQ[j] == 0)) {
+				fprintf(sec, "%d ", arr[i].ride[j]);
+				continue;
+			}
+		}
+		fprintf(sec, "\n");
+	}
+	if (sec != NULL) {
+		fclose(sec);
+		return 1;
+	}
 }
